@@ -340,6 +340,14 @@ updateFirebase(ref, date) {
             rightOpenValue = {75}
             />
             </Content>
+            <Button 
+              transparent
+              block
+              onPress={() => firebase.auth().signOut()}
+              color= {this.state.textColor}
+              style={{width: '100%', justifyContent: 'center', alignItems: 'center'}}> 
+              <Text style={{textAlign: 'center', color: this.state.textColor, fontSize: 15}}> Sign Out </Text>
+            </Button> 
         </ScrollView>
       );
     }

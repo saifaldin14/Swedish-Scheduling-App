@@ -4,8 +4,26 @@ import Month from './screens/Month'
 import Week from './screens/Week'
 import Day from './screens/Day'
 import Add from './screens/Add'
+import Login from './screens/Login'
+import Loading from './screens/Loading'
 
 const DrawerNav = createStackNavigator({
+
+  Loading: {
+    screen: Loading,
+    navigationOptions: () => ({
+      title: 'Loading',
+      headerBackTitle: null
+    }),
+  },
+  Login: {
+    screen: Login,
+    navigationOptions: () => ({
+      title: 'Login',
+      headerBackTitle: null
+    }),
+  },
+
   First: {
     screen: Day,
     navigationOptions: () => ({

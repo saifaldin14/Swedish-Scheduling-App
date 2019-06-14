@@ -26,6 +26,7 @@ date = String(months[d.getMonth()] + " " + d.getDate() + " " + d.getFullYear());
 var imageKey = "John";
 var url = "This";
 var imageURL = "Saif";
+var jSONData = require('../i18next/sv.json');
 
 
 export default class Add extends React.Component  {
@@ -113,7 +114,7 @@ export default class Add extends React.Component  {
                 <Item>
                   <Input
                   onChangeText = {(newContact) => this.setState({newContact})}
-                  placeholder = 'Add Workers in the Morning'/>
+                  placeholder = {jSONData.add.add_worker_morning}/>
 
                 <Button transparent block onPress = {() => this.addRow(this.state.newContact)}>
                     <Icon name = "add"/>
@@ -124,17 +125,24 @@ export default class Add extends React.Component  {
                   onPress={this._pickImage}
                   title="Pick an image from camera roll">
                   <Text>
-                    Pick an image from camera roll
+                    {jSONData.add.pick_image}
                   </Text>
                   </Button>
 
-                <Button onPress={this._takePhoto} title="Take a photo" />     
+                <Button
+                  transparent block
+                  onPress={this._takePhoto}
+                  title="Take Photo">
+                  <Text>
+                    {jSONData.add.take_photo}
+                  </Text>
+                </Button>            
             </Content>
             <Content>
                 <Item>
                   <Input
                   onChangeText = {(newContact2) => this.setState({newContact2})}
-                  placeholder = 'Add Workers at Noon'/>
+                  placeholder = {jSONData.add.add_worker_noon}/>
 
                 <Button transparent block onPress = {() => this.addRow(this.state.newContact2)}>
                     <Icon name = "add"/>
@@ -145,17 +153,24 @@ export default class Add extends React.Component  {
                   onPress={this._pickImage2}
                   title="Pick an image from camera roll">
                   <Text>
-                    Pick an image from camera roll
+                    {jSONData.add.pick_image}
                   </Text>
                   </Button>
 
-                <Button onPress={this._takePhoto2} title="Take a photo" />     
+                  <Button
+                  transparent block
+                  onPress={this._takePhoto2}
+                  title="Take Photo">
+                  <Text>
+                    {jSONData.add.take_photo}
+                  </Text>
+                </Button>               
             </Content>
             <Content>
                 <Item>
                   <Input
                   onChangeText = {(newContact3) => this.setState({newContact3})}
-                  placeholder = 'Add Workers at Night'/>
+                  placeholder = {jSONData.add.add_worker_night}/>
 
                 <Button transparent block onPress = {() => this.addRow(this.state.newContact3)}>
                     <Icon name = "add"/>
@@ -166,11 +181,18 @@ export default class Add extends React.Component  {
                   onPress={this._pickImage3}
                   title="Pick an image from camera roll">
                   <Text>
-                    Pick an image from camera roll
+                    {jSONData.add.pick_image}
                   </Text>
-                  </Button>
+                </Button>
 
-                <Button onPress={this._takePhoto3} title="Take a photo" />     
+                <Button
+                  transparent block
+                  onPress={this._takePhoto3}
+                  title="Take Photo">
+                  <Text>
+                    {jSONData.add.take_photo}
+                  </Text>
+                </Button>               
             </Content>
 
             <Content>

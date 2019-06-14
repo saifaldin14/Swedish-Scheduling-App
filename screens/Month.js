@@ -267,12 +267,15 @@ updateFirebase(ref, date) {
             color: this.state.textColor, 
             backgroundColor: this.state.colorCode}}>{dayOfWeek}</Text>
          <Content>
-            <Text style={{ 
-              borderColor: '#bbb', 
-              padding: 10,
-              fontSize: 18,
-              color: this.state.textColor, 
-              backgroundColor: this.state.colorCode}}>{jSONData.button.morning}</Text>
+            <Item>
+              <Text style={{ 
+                  borderColor: '#bbb', 
+                  padding: 10,
+                  fontSize: 18,
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}>{jSONData.button.morning}</Text>
+              <Image source={require('../assets/images/sun.png')} style={{width: 35, height: 35}}/>
+            </Item>
             <List
             enableEmptySections
             removeClippedSubviews={false}
@@ -317,12 +320,15 @@ updateFirebase(ref, date) {
             </Content>
 
             <Content>
-            <Text style={{ 
+            <Item>
+          <Text style={{ 
               borderColor: '#bbb', 
               padding: 10,
               fontSize: 18,
               color: this.state.textColor, 
               backgroundColor: this.state.colorCode}}>{jSONData.button.night}</Text>
+          <Image source={require('../assets/images/moon.png')} style={{width: 35, height: 35}}/>
+         </Item>
             <List
             enableEmptySections
             removeClippedSubviews={false}
@@ -346,7 +352,7 @@ updateFirebase(ref, date) {
               onPress={() => firebase.auth().signOut()}
               color= {this.state.textColor}
               style={{width: '100%', justifyContent: 'center', alignItems: 'center'}}> 
-              <Text style={{textAlign: 'center', color: this.state.textColor, fontSize: 15}}> Sign Out </Text>
+              <Text style={{textAlign: 'center', color: this.state.textColor, fontSize: 15}}> logga ut </Text>
             </Button> 
         </ScrollView>
       );

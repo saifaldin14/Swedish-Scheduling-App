@@ -154,9 +154,9 @@ export default class Login extends React.Component  {
       signInWithGoogleAsync = async () => {
         try {
           const result = await Expo.Google.logInAsync({
-            // androidClientId: YOUR_CLIENT_ID_HERE,
             behavior: 'web',
             iosClientId: '147985957627-p83b220a0qrgfj2qj96dr3l1dm1h99bf.apps.googleusercontent.com', //enter ios client id
+            androidClientId: '147985957627-pq7tbr673hot79ourclbcfghemnhpshj.apps.googleusercontent.com',
             scopes: ['profile', 'email']
           });
     
@@ -176,7 +176,7 @@ export default class Login extends React.Component  {
           <Container style={styles.container}>
             <Form>
               <Item floatingLabel>
-                <Label>Email</Label>
+                <Label>E-post</Label>
                 <Input
                   autoCorrect={false}
                   autoCapitalize="none"
@@ -186,7 +186,7 @@ export default class Login extends React.Component  {
               </Item>
     
               <Item floatingLabel>
-                <Label>Password</Label>
+                <Label>Lösenord</Label>
                 <Input
                   secureTextEntry={true}
                   autoCorrect={false}
@@ -200,23 +200,23 @@ export default class Login extends React.Component  {
                 rounded
                 success
                 onPress={() => this.loginUser(this.state.email, this.state.password)}>
-                <Text style={{ color: 'white' }}> Login</Text>
+                <Text style={{ color: 'white' }}> Logga in </Text>
               </Button>
               <Item>
                 <Button style={{ marginTop: 10, flex: 1 }}
                     full
                     rounded
-                    primary
+                    danger
                     onPress={() => this.loginWithFacebook()}>
-                    <Text style={{ color: 'white' }}> Login With Facebook</Text>
+                    <Text style={{ color: 'white' }}> Logga in med Facebook </Text>
                 </Button>
                 
                 <Button style={{ marginTop: 10, flex: 1}}
                 full
                 rounded
-                primary
+                warning
                 onPress={() => this.signInWithGoogleAsync()}>
-                <Text style={{ color: 'white'}}> Login With Google</Text>
+                <Text style={{ color: 'white'}}> Logga in med Google </Text>
                 </Button>
               </Item>
     
@@ -226,7 +226,7 @@ export default class Login extends React.Component  {
                 primary
                 onPress={() => this.signUpUser(this.state.email, this.state.password)}
               >
-                <Text style={{ color: 'white' }}> Sign Up</Text>
+                <Text style={{ color: 'white' }}> Bli Medlem </Text>
               </Button>
             </Form>
           </Container>

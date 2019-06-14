@@ -53,9 +53,15 @@
         "go_to_month": "gå till månaden",
         "go_to_week": "gå till veckan",
         "go_to_day": "gå till dag",
-        "morning": "Förmiddag",
-        "noon": "Middag",
+        "morning": "Morgon",
+        "noon": "Kväll",
         "night": "Natt"
-
+    },
+    "add" : {
+        "add_worker_morning" : "lägg till arbetare på morgonen",
+        "add_worker_noon" : "Lägg till arbetare till kvällen",
+        "add_worker_night" : "Lägg till arbetare på natten",
+        "pick_image" : "välj bild från kameravals",
+        "take_photo" : "ta ett foto"
     }
 }

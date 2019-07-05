@@ -3,7 +3,7 @@ import {
   StyleSheet, ListView,
   View,  Dimensions, 
   ScrollView, Text, 
-  Image } from 'react-native';
+  Image, RefreshControl } from 'react-native';
 import { 
   Container, 
   Content, 
@@ -25,13 +25,15 @@ var data2 = [];
 var data3 = [];
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var theDate = "";
+defaultState = { data: null, error: null };
 var d = new Date();
 theDate = String(months[d.getMonth()] + " " + d.getDate() + " " + d.getFullYear());
 var dayOfWeek = "";
 
 var jSONData = require('../i18next/sv.json');
 
-var url = "This";
+var url = "";
+var key = "";
 const screenWidth = Math.round(Dimensions.get('window').width);
 moment().locale('fr');
 
@@ -116,13 +118,22 @@ export default class Week extends React.Component  {
       colorCode: '#eee',
       textColor : '#000000',
       buttonColor : '007AFF',
+      weekColor: '#007AFF',
+      weekHighlightColor: '#5AC8FA',
       listViewData: data,
       listViewData2: data2,
       listViewData3: data3,
       newContact: "",
       image: url,
-      uploading: false
+      uploading: false,
+      refreshing : false,
+      
     };
+
+    this.listViewData1Base = this.state.listViewData;
+    this.listViewData2Base = this.state.listViewData2;
+    this.listViewData3Base = this.state.listViewData3;
+
   }
 
   componentDidMount () {
@@ -134,90 +145,174 @@ export default class Week extends React.Component  {
       dayOfWeek = jSONData.weekdays.sunday;
       this.setState({colorCode : '#cc0000'});
       this.setState({textColor : '#ffffff'});
+
+      this.setState({ weekColor : '#ff5050'});
+      this.setState({ weekHighlightColor: '#ff6666'});
     } else if (d.getDay() == 1) {
       dayOfWeek = jSONData.weekdays.monday;
       this.setState({colorCode : '#339966'});
       this.setState({textColor : '#ffffff'});
+
+      this.setState({ weekColor : '#339933'});
+      this.setState({ weekHighlightColor: '#00cc66'});
     } else if (d.getDay() == 2) {
       dayOfWeek = jSONData.weekdays.tuesday;
       this.setState({colorCode : '#0066cc'});
       this.setState({textColor : '#ffffff'});
+
+      this.setState({ weekColor : '#0099ff'});
+      this.setState({ weekHighlightColor: '#33ccff'});
     } else if (d.getDay() == 3) {
       dayOfWeek = jSONData.weekdays.wednesday;
       this.setState({colorCode : '#ffffff'});
       this.setState({textColor : '#000000'});
+
+      this.setState({ weekColor : '#ffffff'});
+      this.setState({ weekHighlightColor: '#d9d9d9'});
     } else if (d.getDay() == 4) {
       dayOfWeek = jSONData.weekdays.thursday;
       this.setState({colorCode : '#996633'});
       this.setState({textColor : '#ffffff'});
+
+      this.setState({ weekColor : '#ac7339'});
+      this.setState({ weekHighlightColor: '#cc9966'});
     } else if (d.getDay() == 5) {
       dayOfWeek = jSONData.weekdays.friday;
       this.setState({colorCode : '#ffff00'});
       this.setState({textColor : '#000000'});
+
+      this.setState({ weekColor : '#ffcc00'});
+      this.setState({ weekHighlightColor: '#ffd11a'});
     } else if (d.getDay() == 6) {
       dayOfWeek = jSONData.weekdays.saturday;
       this.setState({colorCode : '#ff66ff'});
       this.setState({textColor : '#ffffff'});
+
+      this.setState({ weekColor : '#ff99ff'});
+      this.setState({ weekHighlightColor: '#ffccff'});
     }
   }
 
   updateFirebase(ref, date) {
     var newData = []
     var that = this
-      firebase.database().ref(ref).child(date).on('child_added', function(data){
-          //newData = [...that.state.listViewData]
-          newData.push(data)
-          if(ref == 'Schedule/Morning') {
-            that.setState({listViewData : newData})
-          } else if(ref == 'Schedule/Noon') {
-            that.setState({listViewData2 : newData})
-          } else if(ref == 'Schedule/Night') {
-            that.setState({listViewData3 : newData})
-          }
-      })
+    firebase.database().ref(ref).child(date).on('child_added', function(data){
+      //newData = [...that.state.listViewData]
+      newData.push(data)
+      if(ref === "Schedule/Morning") {
+        that.setState({listViewData : that.listViewData1Base});
+
+        that.setState({listViewData : newData})
+      } else if(ref === "Schedule/Noon") {
+        that.setState({listViewData2 : that.listViewData2Base});
+
+        that.setState({listViewData2 : newData})
+      } else if(ref === "Schedule/Night") {
+        that.setState({listViewData3 : that.listViewData3Base});
+
+        that.setState({listViewData3 : newData})
+      }
+    })
   }
 
-  _OnDateChanged (selectedDate) {
-    this.setState({selectedDate})
-    var str = String(selectedDate)
+  _OnDateChanged (selcDate) {
+
+    //this.setState({listViewData : this.listViewData1Base});
+    //this.setState({listViewData2 : this.listViewData2Base});
+    //this.setState({listViewData3 : this.listViewData3Base});
+    var that = this
+    this.setState({ selectedDate : selcDate })
+    var str = String(selcDate)
+    console.log(str)
     var dateArr = str.split(" ", 4);
+    dateArr[1] = this.handleMonth(dateArr);
     dateArr[2] = this.handleNum(dateArr);
     var date = dateArr[1] + " " + dateArr[2] + " " + dateArr[3]
-    var array = str.split(" ", 3); 
+    var array = str.split(" ", 3);
+    
+    firebase.database().ref('Schedule/Morning').child(date).on('value', function (snapshot) {
+      //console.log(snapshot.hasChild.val().name)
 
-    this.updateFirebase('Schedule/Morning', date)
-    this.updateFirebase('Schedule/Noon', date)
-    this.updateFirebase('Schedule/Night', date)
-
-    if (array[0] == "Sun") {
-        dayOfWeek = jSONData.weekdays.sunday;
-        this.setState({colorCode: '#cc0000'});
-        this.setState({textColor: '#ffffff'});
-      } else if (array[0] == "Mon") {
-        dayOfWeek = jSONData.weekdays.monday;
-        this.setState({colorCode: '#339966'});
-        this.setState({textColor: '#ffffff'});
-      } else if (array[0] == "Tue") {
-        dayOfWeek = jSONData.weekdays.tuesday;
-        this.setState({colorCode: '#0066cc'});
-        this.setState({textColor: '#ffffff'});
-      } else if (array[0] == "Wed") {
-        dayOfWeek = jSONData.weekdays.wednesday;
-        this.setState({colorCode: '#ffffff'});
-        this.setState({textColor: '#000000'});
-      } else if (array[0] == "Thu") {
-        dayOfWeek = jSONData.weekdays.thursday;
-        this.setState({colorCode: '#996633'});
-        this.setState({textColor: '#ffffff'});
-      } else if (array[0] == "Fri") {
-        dayOfWeek = jSONData.weekdays.friday;
-        this.setState({colorCode: '#ffff00'});
-        this.setState({textColor: '#000000'});
-      } else if (array[0] == "Sat") {
-        dayOfWeek = jSONData.weekdays.saturday;
-        this.setState({colorCode: '#ff66ff'});
-        this.setState({textColor: '#ffffff'});
+      if (snapshot.exists()) {
+        that.updateFirebase('Schedule/Morning', date)
+      } else {
+        that.setState({listViewData : that.listViewData1Base});
       }
+  });
+
+  firebase.database().ref('Schedule/Noon').child(date).on('value', function (snapshot) {
+    //console.log(snapshot.hasChild.val().name)
+    if (snapshot.exists()) {
+      that.updateFirebase('Schedule/Noon', date)
+    } else {
+      that.setState({listViewData2 : that.listViewData2Base});
+    }
+});
+
+firebase.database().ref('Schedule/Night').child(date).on('value', function (snapshot) {
+  //console.log(snapshot.hasChild.val().name)
+  if (snapshot.exists()) {
+    that.updateFirebase('Schedule/Night', date)
+  } else {
+    that.setState({listViewData3 : that.listViewData3Base});
+  }
+});
+    if (array[0] == "Sun") {
+      dayOfWeek = jSONData.weekdays.sunday;
+      this.setState({colorCode: '#cc0000'});
+      this.setState({textColor: '#ffffff'});
+      
+      this.setState({ weekColor : '#ff5050'});
+      this.setState({ weekHighlightColor: '#ff6666'});
+    } else if (array[0] == "Mon") {
+      dayOfWeek = jSONData.weekdays.monday;
+      this.setState({colorCode: '#339966'});
+      this.setState({textColor: '#ffffff'});
+
+      this.setState({ weekColor : '#339933'});
+      this.setState({ weekHighlightColor: '#00cc66'});
+    } else if (array[0] == "Tue") {
+      dayOfWeek = jSONData.weekdays.tuesday;
+      this.setState({colorCode: '#0066cc'});
+      this.setState({textColor: '#ffffff'});
+
+      this.setState({ weekColor : '#0099ff'});
+      this.setState({ weekHighlightColor: '#33ccff'});
+    } else if (array[0] == "Wed") {
+      dayOfWeek = jSONData.weekdays.wednesday;
+      this.setState({colorCode: '#ffffff'});
+      this.setState({textColor: '#000000'});
+
+      this.setState({ weekColor : '#ffffff'});
+      this.setState({ weekHighlightColor: '#d9d9d9'});
+    } else if (array[0] == "Thu") {
+      dayOfWeek = jSONData.weekdays.thursday;
+      this.setState({colorCode: '#996633'});
+      this.setState({textColor: '#ffffff'});
+
+      this.setState({ weekColor : '#ac7339'});
+      this.setState({ weekHighlightColor: '#cc9966'});
+    } else if (array[0] == "Fri") {
+      dayOfWeek = jSONData.weekdays.friday;
+      this.setState({colorCode: '#ffff00'});
+      this.setState({textColor: '#000000'});
+
+      this.setState({ weekColor : '#ffcc00'});
+      this.setState({ weekHighlightColor: '#ffd11a'});
+    } else if (array[0] == "Sat") {
+      dayOfWeek = jSONData.weekdays.saturday;
+      this.setState({colorCode: '#ff66ff'});
+      this.setState({textColor: '#ffffff'});
+
+      this.setState({ weekColor : '#ff99ff'});
+      this.setState({ weekHighlightColor: '#ffccff'});
+    }
+
+  }
+
+  _onRefresh() {
+    this.setState({refreshing: true});
+    // your callback function or call this.componentDidMount()
   }
 
   //This is because CalendarStrip date is 01, 02, etc while the data base has dates 1, 2 etc.
@@ -242,6 +337,58 @@ export default class Week extends React.Component  {
       dateArr[2] = '9'
     } 
     return dateArr[2];
+  }
+
+  handleMonth(dateArr) {
+    if (dateArr[1] == 'Jan') {
+      dateArr[1] = 'January'
+    } else if (dateArr[1] == 'Feb') {
+      dateArr[1] = 'February'
+    } else if (dateArr[1] == 'Mar') {
+      dateArr[1] = 'March'
+    } else if (dateArr[1] == 'Apr') {
+      dateArr[1] = 'April'
+    } else if (dateArr[1] == 'Jun') {
+      dateArr[1] = 'June'
+    } else if (dateArr[1] == 'Jul') {
+      dateArr[1] = 'July'
+    } else if (dateArr[1] == 'Aug') {
+      dateArr[1] = 'August'
+    } else if (dateArr[1] == 'Sep') {
+      dateArr[1] = 'September'
+    } else if (dateArr[1] == 'Oct') {
+      dateArr[1] = 'October'
+    } else if (dateArr[1] == 'Nov') {
+      dateArr[1] = 'November'
+    } else if (dateArr[1] == 'Dec') {
+      dateArr[1] = 'December'
+    }
+
+    return dateArr[1];
+  }
+
+  async deleteRow(secId, rowId, rowMap, data) {
+    await firebase.database().ref('Schedule/Morning/' + theDate + "/" + data.key).set(null)
+    rowMap[`${secId}${rowId}`].props.closeRow();
+    var newData = [...this.state.listViewData];
+    newData.splice(rowId, 1)
+    this.setState({ listViewData: newData });
+  }
+
+  async deleteRow2(secId, rowId, rowMap, data) {
+    await firebase.database().ref('Schedule/Noon/' + theDate + "/" + data.key).set(null)
+    rowMap[`${secId}${rowId}`].props.closeRow();
+    var newData = [...this.state.listViewData2];
+    newData.splice(rowId, 1)
+    this.setState({ listViewData2: newData });
+  }
+
+  async deleteRow3(secId, rowId, rowMap, data) {
+    await firebase.database().ref('Schedule/Night/' + theDate + "/" + data.key).set(null)
+    rowMap[`${secId}${rowId}`].props.closeRow();
+    var newData = [...this.state.listViewData3];
+    newData.splice(rowId, 1)
+    this.setState({ listViewData3: newData });
   }
 
   render() {
@@ -286,22 +433,22 @@ export default class Week extends React.Component  {
             </Button> 
           </Item>
 
-           <CalendarStrip
+          <CalendarStrip
                 ref={'myCalendarStrip'}
-                showMonth={false}
+                showMonth={true}
                 selectedDate={this.state.selectedDate}
                 startingDate={this.state.weekStart}
                 onWeekChange={this._handleOnWeekChange}
                 onDateSelected={selectedDate => this._OnDateChanged(selectedDate)}
-                highlightDateNumberStyle={{ color: 'white', fontSize: 12 }}
-                highlightDateNameStyle={{ color: 'white', fontSize: 8 }}
+                highlightDateNumberStyle={{ color: this.state.textColor, fontSize: 12 }}
+                highlightDateNameStyle={{ color: this.state.textColor, fontSize: 8 }}
                 calendarAnimation={{type: 'sequence', duration: 30}}
-                daySelectionAnimation={{type: 'background', duration: 300, highlightColor: '#5AC8FA'}}
+                daySelectionAnimation={{type: 'background', duration: 300, highlightColor: this.state.weekHighlightColor}}
                 style={{height:100, paddingTop: 20, paddingBottom: 10}}
-                calendarHeaderStyle={{color: 'white'}}
-                calendarColor={'#007AFF'}
-                dateNumberStyle={{color: 'white'}}
-                dateNameStyle={{color: 'white'}}
+                calendarHeaderStyle={{color: this.state.textColor}}
+                calendarColor={this.state.weekColor}
+                dateNumberStyle={{color: this.state.textColor}}
+                dateNameStyle={{color: this.state.textColor}}
                 iconContainer={{flex: 0.1}}
                 locale = {{name:moment.locale('sv'), config:localeConst}}
           />
@@ -322,7 +469,7 @@ export default class Week extends React.Component  {
                 backgroundColor: this.state.colorCode}}>{jSONData.button.morning}</Text>
             <Image source={require('../assets/images/sun.png')} style={{width: 35, height: 35}}/>
           </Item>
-            <List
+          <List
             enableEmptySections
             removeClippedSubviews={false}
             horizontal = {true}
@@ -355,7 +502,7 @@ export default class Week extends React.Component  {
             renderRow = { this._RenderListItem.bind(data) }
             
             renderRightHiddenRow={(data, secId, rowId, rowMap) =>
-              <Button full danger onPress={() => this.deleteRow(secId, rowId, rowMap, data)}>
+              <Button full danger onPress={() => this.deleteRow2(secId, rowId, rowMap, data)}>
                 <Icon name="trash" />
               </Button>
             }
@@ -383,7 +530,7 @@ export default class Week extends React.Component  {
             renderRow = { this._RenderListItem.bind(data) }
             
             renderRightHiddenRow={(data, secId, rowId, rowMap) =>
-              <Button full danger onPress={() => this.deleteRow(secId, rowId, rowMap, data)}>
+              <Button full danger onPress={() => this.deleteRow3(secId, rowId, rowMap, data)}>
                 <Icon name="trash" />
               </Button>
             }
@@ -424,21 +571,174 @@ export default class Week extends React.Component  {
       }
     };
 
+    /* _RenderListItem = (data) => {
+      var key = data.val().name
+      //var url = jSONWorkers.staff[key].image.url
+      //var url = data.val().url
+      if (key == "Alexander") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/alexander.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Anna") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/anna.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Berker") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/berker.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Carro") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/carro.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Elin L") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/elin.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Fabian") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/fabian.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Harald") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/harald.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Herman") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/herman.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Hertha") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/hertha.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Kalle") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/kalle.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Sara L") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/sara.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Sebastian") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/sebastian.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      }
+      return;
+    }*/
+
     _RenderListItem = (data) => {
       var key = data.val().name
+      //var url = jSONWorkers.staff[key].image.url
       var url = data.val().url
-      return (
-        <ListItem style={{backgroundColor: this.state.colorCode}}>
-          <View>
-            <Text style={{
-                color: this.state.textColor, 
-                backgroundColor: this.state.colorCode}}> {key} </Text>
-              <Image  source={{uri : url}} style={{ width: 100, height: 100 }} />
-              {this._maybeRenderUploadingOverlay()}
-          </View>
-      </ListItem>
-      );
-    }
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={{uri: url}} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      }
 
   }
   

@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  StyleSheet, ListView,
+  Alert, StyleSheet, ListView,
   View,  Dimensions, 
   ScrollView, Text, 
   Image } from 'react-native';
@@ -31,9 +31,24 @@ export default class Login extends React.Component  {
           }
         })
       }
+
+      signUpUserAlert = (email, password) => {
+        Alert.alert(
+          'Registrera Användaren',
+          'Jag är över 13 år och en personal eller bosatt i Östergårdsgatan 2',
+          [
+            {
+              text: 'Annullera',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'OK', onPress: () => this.signUpUser(email, password)},
+          ],
+          {cancelable: false},
+        );
+      }
     
       signUpUser = (email, password) => {
-    
         try {
     
           if (this.state.password.length < 6) {
@@ -224,7 +239,7 @@ export default class Login extends React.Component  {
                 full
                 rounded
                 primary
-                onPress={() => this.signUpUser(this.state.email, this.state.password)}
+                onPress={() => this.signUpUserAlert(this.state.email, this.state.password)}
               >
                 <Text style={{ color: 'white' }}> Bli Medlem </Text>
               </Button>

@@ -13,6 +13,7 @@ import {
   List, Item, 
   Input, Icon, 
   Button } from 'native-base';
+  import DateTimePicker from "react-native-modal-datetime-picker";
 import * as firebase from 'firebase';
 
 var data = [];
@@ -43,6 +44,7 @@ export default class Add extends React.Component  {
       newContact3: "",
       image: url,
       uploading: false,
+      isDateTimePickerVisible: false,
     };
   }
 
@@ -106,11 +108,39 @@ export default class Add extends React.Component  {
     newData.splice(rowId, 1)
     this.setState({ listViewData3: newData });
   }
+
+  showDateTimePicker = () => {
+    this.setState({ isDateTimePickerVisible: true });
+  };
+
+  hideDateTimePicker = () => {
+    this.setState({ isDateTimePickerVisible: false });
+  };
+
+  handleDatePicked = theDate => {
+    date = String(months[theDate.getMonth()] + " " + theDate.getDate() + " " + theDate.getFullYear());
+    console.log(date);
+    this.hideDateTimePicker();
+  };
+
   render() {
     let { image } = this.state;
       return (
         <ScrollView>
             <Content>
+                <Button
+                  transparent block
+                  onPress={this.showDateTimePicker}
+                  title="Pick an image from camera roll">
+                    <Text>
+                      Visa datumväljare
+                    </Text>
+                  </Button>
+                <DateTimePicker
+                  isVisible={this.state.isDateTimePickerVisible}
+                  onConfirm={this.handleDatePicked}
+                  onCancel={this.hideDateTimePicker}
+                />
                 <Item>
                   <Input
                   onChangeText = {(newContact) => this.setState({newContact})}
@@ -195,26 +225,13 @@ export default class Add extends React.Component  {
                 </Button>               
             </Content>
 
-            <Content>
-                <List
-                enableEmptySections
-                dataSource = {this.ds.cloneWithRows(this.state.listViewData)}
-                renderRow = { this._RenderListItem.bind(data) }
-                renderLeftHiddenRow = { data =>
-                    <Button full onPress = {() => this.addRow(data)}>
-                        <Icon name = 'information-circle'/>
-                    </Button>
-                }
-                renderRightHiddenRow={(data, secId, rowId, rowMap) =>
-                  <Button full danger onPress={() => this.deleteRow(secId, rowId, rowMap, data)}>
-                    <Icon name="trash" />
-                  </Button>
-                }
-
-                leftOpenValue = {-75}
-                rightOpenValue = {75}
-                />
-            </Content>
+              <Button
+                block success
+                style = {{justifyContent: 'center', alignItems: 'center'}}
+                onPress={() => this.props.navigation.navigate('First')}
+                title="Pick an image from camera roll">
+                  <Text style={{color:'white'}}> Gjort </Text>
+                </Button>
 
        </ScrollView>
       );

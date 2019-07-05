@@ -1,0 +1,27 @@
+{
+    "staff" : {
+        "Choose Worker" : {
+            "name" : "error",
+            "image" : {
+                "index" : "Choose Worker",
+                "url" : "/assets/images/robot-dev.png"
+            }
+        },
+
+        "Saif": {
+            "name": "Saif",
+            "image" : {
+                "index" : "Saif",
+                "url" : "/assets/images/robot-dev.png"
+            }
+        },
+
+        "John": {
+            "name": "John",
+            "image" : {
+                "index" : "John",
+                "url" : "/assets/images/robot-prod.png"
+            }
+        }
+    }
+}

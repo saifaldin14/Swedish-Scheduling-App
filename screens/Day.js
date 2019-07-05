@@ -47,6 +47,7 @@ export default class Day extends React.Component  {
       image: url,
       uploading: false
     };
+
   }
 
   componentDidMount() {
@@ -101,13 +102,29 @@ export default class Day extends React.Component  {
       })
 }
 
-  async deleteRow(secId, rowId, rowMap, data) {
-    await firebase.database().ref('Schedule/Morning/' + theDate + "/" + data.key).set(null)
-    rowMap[`${secId}${rowId}`].props.closeRow();
-    var newData = [...this.state.listViewData];
-    newData.splice(rowId, 1)
-    this.setState({ listViewData: newData });
-  }
+async deleteRow(secId, rowId, rowMap, data) {
+  await firebase.database().ref('Schedule/Morning/' + theDate + "/" + data.key).set(null)
+  rowMap[`${secId}${rowId}`].props.closeRow();
+  var newData = [...this.state.listViewData];
+  newData.splice(rowId, 1)
+  this.setState({ listViewData: newData });
+}
+
+async deleteRow2(secId, rowId, rowMap, data) {
+  await firebase.database().ref('Schedule/Noon/' + theDate + "/" + data.key).set(null)
+  rowMap[`${secId}${rowId}`].props.closeRow();
+  var newData = [...this.state.listViewData2];
+  newData.splice(rowId, 1)
+  this.setState({ listViewData2: newData });
+}
+
+async deleteRow3(secId, rowId, rowMap, data) {
+  await firebase.database().ref('Schedule/Night/' + theDate + "/" + data.key).set(null)
+  rowMap[`${secId}${rowId}`].props.closeRow();
+  var newData = [...this.state.listViewData3];
+  newData.splice(rowId, 1)
+  this.setState({ listViewData3: newData });
+}
 
   render() {
       return (
@@ -212,7 +229,7 @@ export default class Day extends React.Component  {
         renderRow = { this._RenderListItem.bind(data) }
         
         renderRightHiddenRow={(data, secId, rowId, rowMap) =>
-          <Button full danger onPress={() => this.deleteRow(secId, rowId, rowMap, data)}>
+          <Button full danger onPress={() => this.deleteRow2(secId, rowId, rowMap, data)}>
             <Icon name="trash" />
           </Button>
         }
@@ -240,7 +257,7 @@ export default class Day extends React.Component  {
           renderRow = { this._RenderListItem.bind(data) }
           
           renderRightHiddenRow={(data, secId, rowId, rowMap) =>
-            <Button full danger onPress={() => this.deleteRow(secId, rowId, rowMap, data)}>
+            <Button full danger onPress={() => this.deleteRow3(secId, rowId, rowMap, data)}>
               <Icon name="trash" />
             </Button>
           }
@@ -280,21 +297,174 @@ export default class Day extends React.Component  {
       }
     };
 
+    /* _RenderListItem = (data) => {
+      var key = data.val().name
+      //var url = jSONWorkers.staff[key].image.url
+      //var url = data.val().url
+      if (key == "Alexander") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/alexander.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Anna") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/anna.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Berker") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/berker.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Carro") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/carro.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Elin L") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/elin.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Fabian") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/fabian.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Harald") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/harald.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Herman") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/herman.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Hertha") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/hertha.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Kalle") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/kalle.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Sara L") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/sara.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      } else if (key == "Sebastian") {
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={require('../assets/images/sebastian.jpg')} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      }
+      return;
+    }*/
+
     _RenderListItem = (data) => {
       var key = data.val().name
+      //var url = jSONWorkers.staff[key].image.url
       var url = data.val().url
-      return (
-        <ListItem style={{backgroundColor: this.state.colorCode}}>
-          <View>
-            <Text style={{
-                color: this.state.textColor, 
-                backgroundColor: this.state.colorCode}}> {key} </Text>
-              <Image  source={{uri : url}} style={{ width: 100, height: 100 }} />
-              {this._maybeRenderUploadingOverlay()}
-          </View>
-      </ListItem>
-      );
-    }
+        return (
+          <ListItem style={{backgroundColor: this.state.colorCode}}>
+            <View>
+              <Text style={{
+                  color: this.state.textColor, 
+                  backgroundColor: this.state.colorCode}}> {key} </Text>
+                <Image  source={{uri: url}} style={{ width: 100, height: 100 }} />
+                {this._maybeRenderUploadingOverlay()}
+            </View>
+        </ListItem>
+        );
+      }
   }
   
   const styles = StyleSheet.create({

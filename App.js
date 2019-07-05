@@ -4,22 +4,31 @@ import Month from './screens/Month'
 import Week from './screens/Week'
 import Day from './screens/Day'
 import Add from './screens/Add'
+import Add2 from './screens/Add2'
 import Login from './screens/Login'
 import Loading from './screens/Loading'
+import Passcode from './screens/Passcode'
 
 const DrawerNav = createStackNavigator({
 
+  Passcode: {
+    screen: Passcode,
+    navigationOptions: () => ({
+      title: 'Lösenkod', //Passcode
+      headerBackTitle: null
+    }),
+  },
   Loading: {
     screen: Loading,
     navigationOptions: () => ({
-      title: 'Loading',
+      title: 'Läser In', //Loading
       headerBackTitle: null
     }),
   },
   Login: {
     screen: Login,
     navigationOptions: () => ({
-      title: 'Login',
+      title: 'Logga In', //Login
       headerBackTitle: null
     }),
   },
@@ -27,21 +36,21 @@ const DrawerNav = createStackNavigator({
   First: {
     screen: Day,
     navigationOptions: () => ({
-      title: 'Day',
+      title: 'Dag', //Day
       headerBackTitle: null
     }),
   },
   Second: {
     screen: Week,
     navigationOptions: () => ({
-      title: 'Week',
+      title: 'Vecka', //Week
       headerBackTitle: null
     }),
   },
   Third: {
     screen: Month,
     navigationOptions: () => ({
-      title: 'Month',
+      title: 'Månad', //Month
       headerBackTitle: null
     }),
   },
@@ -49,7 +58,7 @@ const DrawerNav = createStackNavigator({
   Add: {
     screen: Add,
     navigationOptions: () => ({
-      title: 'Add',
+      title: 'Lägg Till', //Add
       headerBackTitle: null
     }),
   }
